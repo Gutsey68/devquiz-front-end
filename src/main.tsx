@@ -1,6 +1,11 @@
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider
+} from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import './globals.css';
 import { Accueil } from './pages/Accueil';
 import { LogIn } from './pages/LogIn';
@@ -8,6 +13,16 @@ import { PageError } from './pages/PageError';
 import QuizDetail from './pages/QuizDetail';
 import { QuizList } from './pages/QuizList';
 import { SignUp } from './pages/SignUp';
+
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/connexion" />;
+};
+
+const AuthenticatedRoute = ({ children }: { children: JSX.Element }) => {
+  const { isAuthenticated } = useAuth();
+  return !isAuthenticated ? children : <Navigate to="/" />;
+};
 
 const router = createBrowserRouter([
   {
@@ -21,24 +36,42 @@ const router = createBrowserRouter([
       },
       {
         path: '/quiz',
-        element: <QuizList />
+        element: (
+          <PrivateRoute>
+            <QuizList />
+          </PrivateRoute>
+        )
       },
       {
         path: 'quiz/:quizId',
-        element: <QuizDetail />
+        element: (
+          <PrivateRoute>
+            <QuizDetail />
+          </PrivateRoute>
+        )
       },
       {
         path: '/connexion',
-        element: <LogIn />
+        element: (
+          <AuthenticatedRoute>
+            <LogIn />
+          </AuthenticatedRoute>
+        )
       },
       {
         path: '/inscription',
-        element: <SignUp />
+        element: (
+          <AuthenticatedRoute>
+            <SignUp />
+          </AuthenticatedRoute>
+        )
       }
     ]
   }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router} />
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>
 );

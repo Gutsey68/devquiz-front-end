@@ -1,14 +1,8 @@
 import QuizCard from '@/components/QuizCard';
+import { Quiz } from '@/interfaces/QuizInterface';
 import { getIconPath } from '@/utils/getIconPath';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-
-interface Quiz {
-  id: number;
-  name: string;
-  description: string;
-  icon_name: string;
-}
 
 export const QuizList = () => {
   const [quiz, setQuiz] = useState<Quiz[]>([]);
@@ -22,7 +16,6 @@ export const QuizList = () => {
           setQuiz(response.data.data);
         } else {
           console.log(response.data.data);
-
           setError('Unexpected response format');
         }
       } catch (error) {
@@ -35,7 +28,7 @@ export const QuizList = () => {
   }, []);
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="text-center text-red-500">⚠️ {error}</div>;
   }
 
   return (

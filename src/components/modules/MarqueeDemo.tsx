@@ -68,7 +68,7 @@ export function MarqueeDemo() {
   }, []);
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="text-center text-red-500">⚠️ {error}</div>;
   }
 
   const firstRow = quizzes.slice(0, quizzes.length / 2);

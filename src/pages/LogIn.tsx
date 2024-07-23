@@ -8,12 +8,38 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/context/AuthContext';
 import { Label } from '@radix-ui/react-label';
+import axios from 'axios';
 import { LogInIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const LogIn = () => {
-  function handleLogin() {}
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = async e => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/api/login',
+        formData
+      );
+      login(response.data.token);
+      navigate('/');
+    } catch (error) {
+      console.error('Erreur lors de la connexion:', error);
+    }
+  };
 
   return (
     <Card className="w-full max-w-sm m-auto">
@@ -29,14 +55,24 @@ export const LogIn = () => {
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="phplover@example.com"
               required
+              value={formData.email}
+              onChange={handleChange}
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Mot de passe</Label>
-            <Input id="password" type="password" required />
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+            />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col">
